@@ -305,22 +305,49 @@ class SlideshowModel{
         var _this = this;
 
         this.timer = setTimeout(function() {
-            if (_this.hasNextSlide())
-            {
-                // Continue slideshow
-                _this.increaseCurrentSlideNumber();
-            }
-            else if (_this.isTryingToLoadMoreSlides())
-            {
-                // Wait for loading images/videos to finish
-                _this.sitesManager.runCodeWhenFinishGettingMoreSlides(function(){
-                    _this.tryToStartCountdown();
-                });
-            }
-            else
-            {
-                // Loop when out of images/videos
-                _this.setSlideNumberToFirst();
+            var currentVid = document.getElementById("current-video");
+            currentVid.loop = true;
+            console.error(currentVid.duration, millisecondsPerSlide);
+            if( currentVid.style.display !== "none" && currentVid.duration > millisecondsPerSlide / 1000) {
+                currentVid.loop = false;
+                currentVid.onended = function() {
+                    if (_this.hasNextSlide())
+                    {
+                        // Continue slideshow
+                        _this.increaseCurrentSlideNumber();
+                    }
+                    else if (_this.isTryingToLoadMoreSlides())
+                    {
+                        // Wait for loading images/videos to finish
+                        _this.sitesManager.runCodeWhenFinishGettingMoreSlides(function(){
+                            _this.tryToStartCountdown();
+                        });
+                    }
+                    else
+                    {
+                        // Loop when out of images/videos
+                        _this.setSlideNumberToFirst();
+                    }
+                    currentVid.loop = true;
+                }
+            } else {
+                if (_this.hasNextSlide())
+                {
+                    // Continue slideshow
+                    _this.increaseCurrentSlideNumber();
+                }
+                else if (_this.isTryingToLoadMoreSlides())
+                {
+                    // Wait for loading images/videos to finish
+                    _this.sitesManager.runCodeWhenFinishGettingMoreSlides(function(){
+                        _this.tryToStartCountdown();
+                    });
+                }
+                else
+                {
+                    // Loop when out of images/videos
+                    _this.setSlideNumberToFirst();
+                }
             }
 		
         }, millisecondsPerSlide);
